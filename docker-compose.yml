@@ -1,0 +1,36 @@
+services:
+  db:
+    image: postgres:15
+    container_name: pethub-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: pethub-db
+    ports:
+      - 5432:5432
+    networks:
+      - pethub
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pethub-backend
+    environment:
+      APP_PORT: 3000
+      DATABASE_HOST: db
+      DATABASE_PORT: 5432
+      DATABASE_USER: postgres
+      DATABASE_PASS: postgres
+      DATABASE_NAME: pethub-db
+      PASSWORD_SECRET: qwertasdfgyuiopl
+    ports:
+      - '3005:3000'
+    depends_on:
+      - db
+    volumes:
+      - ./src:/app/src
+      - /usr/src/app/node_modules
+
+networks:
+  pethub:
