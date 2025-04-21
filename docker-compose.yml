@@ -3,11 +3,11 @@ services:
     image: postgres:15
     container_name: pethub-db
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: upsql
+      POSTGRES_PASSWORD: ppsql
       POSTGRES_DB: pethub-db
     ports:
-      - 5432:5432
+      - 5433:5432
     networks:
       - pethub
 
