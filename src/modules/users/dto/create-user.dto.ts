@@ -19,7 +19,7 @@ export class CreateUserDto {
   @IsEmail()
   email: string;
 
-  @IsPhoneNumber()
+  @IsPhoneNumber('ID', { message: 'phone number must start with 62' })
   @IsOptional()
   phone?: string;
 

@@ -4,35 +4,37 @@ import { UpdateAccountDto } from './dto/update-account.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Account } from './entities/account.entity';
 import { Repository } from 'typeorm';
-import { PageParamsDto } from 'src/core/utils/utils';
+import { QueryParamsDto } from 'src/common/dto/query-params.dto';
+import { BaseService } from 'src/common/base.service';
+import { QueryToolkitService } from 'src/common/query-toolkit.service';
 
 @Injectable()
-export class AccountsService {
+export class AccountsService extends BaseService<Account> {
   constructor(
     @InjectRepository(Account)
     private readonly accountRepository: Repository<Account>,
-  ) {}
+    queryToolkit: QueryToolkitService,
+  ) {
+    super(accountRepository, queryToolkit);
+  }
 
   async create(createAccountDto: CreateAccountDto): Promise<Account> {
     const account = this.accountRepository.create(createAccountDto);
     return this.accountRepository.save(account);
   }
 
-  async findAll(params: PageParamsDto) {
-    const { sortBy, sortOrder, offset, limit } = params;
-
-    const [data, total] = await this.accountRepository.findAndCount({
-      order: { [sortBy]: sortOrder },
-      skip: offset,
-      take: limit,
-    });
-
-    return { data, total };
+  async findAll(params: QueryParamsDto) {
+    const allowedFields = ['username', 'isActive', 'user.name'];
+    return this.baseFindAll(
+      params,
+      allowedFields,
+      'account',
+      this.accountRepository.metadata.relations.map((r) => r.propertyName),
+    );
   }
 
   async findOne(id: string) {
-    const account = await this.accountRepository.findOneBy({ id });
-    return account;
+    return await this.accountRepository.findOneBy({ id });
   }
 
   async update(

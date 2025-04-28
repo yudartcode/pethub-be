@@ -4,30 +4,37 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
-import { PageParamsDto } from 'src/core/utils/utils';
+import { QueryToolkitService } from 'src/common/query-toolkit.service';
+import { QueryParamsDto } from 'src/common/dto/query-params.dto';
+import { BaseService } from 'src/common/base.service';
+import { AccountsService } from '../accounts/accounts.service';
 
 @Injectable()
-export class UsersService {
+export class UsersService extends BaseService<User> {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-  ) {}
-
-  async create(createUserDto: CreateUserDto) {
-    return await this.userRepository.save(createUserDto);
+    private readonly accountService: AccountsService,
+    queryToolkit: QueryToolkitService,
+  ) {
+    super(userRepository, queryToolkit);
   }
 
-  async findAll(params: PageParamsDto) {
-    const { sortBy, sortOrder, offset, limit } = params;
+  async create(createUserDto: CreateUserDto) {
+    const account = await this.accountService.findOne(createUserDto.accountId);
+    if (!account) throw new Error('Account not found');
+    const user = this.userRepository.create({ ...createUserDto, account });
+    return await this.userRepository.save(user);
+  }
 
-    const [data, total] = await this.userRepository.findAndCount({
-      order: { [sortBy]: sortOrder },
-      skip: offset,
-      take: limit,
-      relations: ['account'],
-    });
-
-    return { data, total };
+  async findAll(query: QueryParamsDto) {
+    const allowedFields = ['name', 'email'];
+    return this.baseFindAll(
+      query,
+      allowedFields,
+      'user',
+      this.userRepository.metadata.relations.map((r) => r.propertyName),
+    );
   }
 
   async findOne(id: string) {
@@ -35,7 +42,8 @@ export class UsersService {
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
-    return await this.userRepository.update(id, updateUserDto);
+    await this.userRepository.update(id, updateUserDto);
+    return this.userRepository.findOneBy({ id });
   }
 
   async remove(id: string) {

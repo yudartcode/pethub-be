@@ -14,7 +14,8 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger';
 import { User } from './entities/user.entity';
-import { pageBuilder, PageParamsDto, resBuilder } from 'src/core/utils/utils';
+import { resBuilder } from 'src/core/utils/utils';
+import { QueryParamsDto } from 'src/common/dto/query-params.dto';
 
 @Controller('users')
 export class UsersController {
@@ -29,16 +30,8 @@ export class UsersController {
 
   @Get()
   @ApiOkResponse({ type: [User] })
-  async findAll(@Query() params: PageParamsDto) {
-    const { limit, offset } = params;
-    const { data, total } = await this.usersService.findAll(params);
-
-    return resBuilder(
-      HttpStatus.OK,
-      true,
-      'Success',
-      pageBuilder(data, total, limit, offset),
-    );
+  async findAll(@Query() query: QueryParamsDto) {
+    return await this.usersService.findAll(query);
   }
 
   @Get(':id')
