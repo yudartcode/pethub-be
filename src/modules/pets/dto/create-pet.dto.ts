@@ -1,10 +1,4 @@
-import {
-  IsBoolean,
-  IsDate,
-  IsEnum,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsBoolean, IsEnum, IsOptional, IsString } from 'class-validator';
 import { Gender } from 'src/modules/users/entities/user.entity';
 
 export class CreatePetDto {
@@ -29,7 +23,6 @@ export class CreatePetDto {
   @IsOptional()
   pictures?: string[];
 
-  @IsDate()
   @IsOptional()
   dob?: Date;
 

@@ -25,7 +25,7 @@ export class Pet {
   @Column({ nullable: true })
   breed?: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'date' })
   dob?: Date;
 
   @Column({ nullable: true })
