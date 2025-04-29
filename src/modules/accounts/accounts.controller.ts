@@ -7,14 +7,13 @@ import {
   Param,
   Delete,
   Query,
-  HttpStatus,
 } from '@nestjs/common';
 import { AccountsService } from './accounts.service';
 import { CreateAccountDto } from './dto/create-account.dto';
 import { UpdateAccountDto } from './dto/update-account.dto';
-import { pageBuilder, PageParamsDto, resBuilder } from 'src/core/utils/utils';
 import { ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger';
 import { Account } from './entities/account.entity';
+import { QueryParamsDto } from 'src/common/dto/query-params.dto';
 
 @Controller('accounts')
 export class AccountsController {
@@ -28,29 +27,24 @@ export class AccountsController {
 
   @Get()
   @ApiOkResponse({ type: Account, isArray: true })
-  async findAll(@Query() params: PageParamsDto) {
-    const { limit, offset } = params;
-    const { data, total } = await this.accountsService.findAll(params);
-
-    return resBuilder(
-      HttpStatus.OK,
-      true,
-      'Success',
-      pageBuilder(data, total, limit, offset),
-    );
+  async findAll(@Query() params: QueryParamsDto) {
+    return await this.accountsService.findAll(params);
   }
 
   @Get(':id')
+  @ApiOkResponse({ type: Account })
   findOne(@Param('id') id: string) {
     return this.accountsService.findOne(id);
   }
 
   @Patch(':id')
+  @ApiOkResponse({ type: Account })
   update(@Param('id') id: string, @Body() updateAccountDto: UpdateAccountDto) {
     return this.accountsService.update(id, updateAccountDto);
   }
 
   @Delete(':id')
+  @ApiOkResponse({ type: Account })
   remove(@Param('id') id: string) {
     return this.accountsService.remove(id);
   }
