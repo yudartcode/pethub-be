@@ -18,17 +18,17 @@ export const pageBuilder = <T = any>(
   limit: number,
   offset: number,
 ) => {
-  const current_page = Math.floor(offset / limit) + 1;
-  const total_page = Math.ceil(total / limit);
-  const has_previous_page = current_page > 1;
-  const has_next_page = current_page < total_page;
+  const currentPage = Math.floor(offset / limit) + 1;
+  const totalPage = Math.ceil(total / limit);
+  const hasPrevPage = currentPage > 1;
+  const hasNextPage = currentPage < totalPage;
 
   return {
     data,
     total,
-    total_page,
-    current_page,
-    has_previous_page,
-    has_next_page,
+    totalPage,
+    currentPage,
+    hasPrevPage,
+    hasNextPage,
   };
 };

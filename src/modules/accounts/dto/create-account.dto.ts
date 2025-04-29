@@ -2,6 +2,7 @@ import { IsBoolean, IsOptional, IsString, MinLength } from 'class-validator';
 
 export class CreateAccountDto {
   @IsString()
+  @MinLength(4)
   username: string;
 
   @IsString()
