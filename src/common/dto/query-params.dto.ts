@@ -1,4 +1,6 @@
-import { IsOptional, IsString, IsNumberString, IsEnum } from 'class-validator';
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import { IsOptional, IsString, IsEnum, IsInt, Max, Min } from 'class-validator';
 
 enum SearchMode {
   and = 'and',
@@ -32,19 +34,41 @@ export class QueryParamsDto {
   @IsEnum(MatchMode)
   match_mode?: MatchMode;
 
+  @ApiPropertyOptional({
+    default: 'createdAt',
+  })
   @IsOptional()
   @IsString()
   sort_by?: string;
 
+  @ApiPropertyOptional({ enum: SortOrder, default: SortOrder.desc })
   @IsOptional()
   @IsEnum(SortOrder)
-  sort_order?: SortOrder;
+  sort_order?: SortOrder = SortOrder.desc;
 
+  @ApiPropertyOptional({
+    minimum: 1,
+    default: 1,
+  })
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
   @IsOptional()
-  @IsNumberString()
-  page?: string;
+  page?: number = 1;
 
+  get offset(): number {
+    return (this.page - 1) * this.limit;
+  }
+
+  @ApiPropertyOptional({
+    minimum: 1,
+    maximum: 50,
+    default: 10,
+  })
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  @Max(50)
   @IsOptional()
-  @IsNumberString()
-  limit?: string;
+  limit?: number = 10;
 }

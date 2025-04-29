@@ -36,7 +36,7 @@ export abstract class BaseService<T> {
         items,
         total,
         Number(query.limit) || 10,
-        Number(query.page) || 1,
+        Number(query.offset) || 1,
       ),
     );
   }
