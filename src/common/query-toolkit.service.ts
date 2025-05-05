@@ -123,13 +123,10 @@ export class QueryToolkitService {
     fields.forEach((field) => {
       if (field.includes('.')) {
         const [relation] = field.split('.');
-        console.log(relation);
 
         const alreadyJoined = qb.expressionMap.joinAttributes.some(
           (join) => join.alias.name === relation,
         );
-        console.log(alreadyJoined);
-        console.log(qb);
 
         if (!alreadyJoined) {
           qb.leftJoinAndSelect(`${alias}.${relation}`, relation); // Automatically join relations

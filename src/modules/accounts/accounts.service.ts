@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import { QueryParamsDto } from 'src/common/dto/query-params.dto';
 import { BaseService } from 'src/common/base.service';
 import { QueryToolkitService } from 'src/common/query-toolkit.service';
+import { hashPassword } from 'src/core/utils/utils';
 
 @Injectable()
 export class AccountsService extends BaseService<Account> {
@@ -19,6 +20,7 @@ export class AccountsService extends BaseService<Account> {
   }
 
   async create(createAccountDto: CreateAccountDto): Promise<Account> {
+    createAccountDto.password = await hashPassword(createAccountDto.password);
     const account = this.accountRepository.create(createAccountDto);
     return this.accountRepository.save(account);
   }
@@ -37,10 +39,17 @@ export class AccountsService extends BaseService<Account> {
     return await this.accountRepository.findOneBy({ id });
   }
 
+  async findByUsername(username: string) {
+    return await this.accountRepository.findOneBy({ username });
+  }
+
   async update(
     id: string,
     updateAccountDto: UpdateAccountDto,
   ): Promise<Account> {
+    if (updateAccountDto.password) {
+      updateAccountDto.password = await hashPassword(updateAccountDto.password);
+    }
     await this.accountRepository.update(id, updateAccountDto);
     return await this.accountRepository.findOneBy({ id });
   }

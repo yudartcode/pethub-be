@@ -28,7 +28,7 @@ export class UsersService extends BaseService<User> {
   }
 
   async findAll(query: QueryParamsDto) {
-    const allowedFields = ['name', 'email'];
+    const allowedFields = ['name', 'email', 'account.username'];
     return this.baseFindAll(
       query,
       allowedFields,

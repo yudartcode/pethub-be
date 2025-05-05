@@ -1,3 +1,5 @@
+import * as bcrypt from 'bcryptjs';
+
 export const resBuilder = <T = any>(
   code: number,
   status: boolean,
@@ -31,4 +33,9 @@ export const pageBuilder = <T = any>(
     hasPrevPage,
     hasNextPage,
   };
+};
+
+export const hashPassword = async (password: string) => {
+  const salt = await bcrypt.genSalt(10);
+  return await bcrypt.hash(password, salt);
 };

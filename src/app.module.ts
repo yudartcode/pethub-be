@@ -5,6 +5,7 @@ import { AccountsModule } from './modules/accounts/accounts.module';
 import { UsersModule } from './modules/users/users.module';
 import { CommonModule } from './common/common.module';
 import { PetsModule } from './modules/pets/pets.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { PetsModule } from './modules/pets/pets.module';
       ],
       synchronize: process.env.NODE_ENV !== 'prod', // Disable in production
     }),
+    AuthModule,
     AccountsModule,
     UsersModule,
     CommonModule,
