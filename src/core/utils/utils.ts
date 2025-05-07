@@ -1,5 +1,3 @@
-import * as bcrypt from 'bcryptjs';
-
 export const resBuilder = <T = any>(
   code: number,
   status: boolean,
@@ -36,6 +34,12 @@ export const pageBuilder = <T = any>(
 };
 
 export const hashPassword = async (password: string) => {
-  const salt = await bcrypt.genSalt(10);
-  return await bcrypt.hash(password, salt);
+  return await Bun.password.hash(password, {
+    algorithm: 'bcrypt',
+    cost: parseInt(process.env.BCRYPT_COST || '10'),
+  });
+};
+
+export const comparePassword = async (password: string, hash: string) => {
+  return await Bun.password.verify(password, hash);
 };
