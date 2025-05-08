@@ -1,11 +1,12 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
-import { AccountsModule } from './modules/accounts/accounts.module';
 import { UsersModule } from './modules/users/users.module';
 import { CommonModule } from './common/common.module';
 import { PetsModule } from './modules/pets/pets.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { ShelterModule } from './modules/shelter/shelter.module';
+import { AdoptionRequestModule } from './modules/adoption_request/adoption_request.module';
 
 @Module({
   imports: [
@@ -24,13 +25,14 @@ import { AuthModule } from './modules/auth/auth.module';
         __dirname + '/../../modules/**/entities/*.entity{.ts,.js}',
         __dirname + '/**/*.entity{.ts,.js}',
       ],
-      synchronize: process.env.NODE_ENV !== 'prod', // Disable in production
+      synchronize: process.env.NODE_ENV !== 'prod',
     }),
-    AuthModule,
-    AccountsModule,
-    UsersModule,
     CommonModule,
+    AuthModule,
+    UsersModule,
     PetsModule,
+    ShelterModule,
+    AdoptionRequestModule,
   ],
 })
 export class AppModule {}

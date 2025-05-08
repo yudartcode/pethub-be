@@ -1,5 +1,10 @@
-import { IsBoolean, IsEnum, IsOptional, IsString } from 'class-validator';
-import { Gender } from 'src/modules/users/entities/user.entity';
+import {
+  IsBoolean,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsUUID,
+} from 'class-validator';
 
 export class CreatePetDto {
   @IsString()
@@ -8,24 +13,27 @@ export class CreatePetDto {
   @IsString()
   species: string;
 
-  @IsEnum(Gender, { message: 'gender must be MALE or FEMALE' })
-  gender: Gender;
+  @IsString()
+  breed: string;
+
+  @IsNumber()
+  age: number;
 
   @IsString()
-  @IsOptional()
-  breed?: string;
+  gender: string;
 
   @IsString()
-  @IsOptional()
-  color?: string;
-
-  @IsString({ each: true })
-  @IsOptional()
-  pictures?: string[];
+  description: string;
 
   @IsOptional()
-  dob?: Date;
-
   @IsBoolean()
-  isDead?: boolean = false;
+  isAvailableForAdoption?: boolean;
+
+  @IsOptional()
+  @IsUUID()
+  shelterId?: string;
+
+  @IsOptional()
+  @IsUUID()
+  ownerId?: string;
 }

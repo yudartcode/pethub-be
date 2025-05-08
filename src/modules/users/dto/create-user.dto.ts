@@ -4,32 +4,29 @@ import {
   IsOptional,
   IsPhoneNumber,
   IsString,
-  IsUrl,
   IsUUID,
+  MinLength,
 } from 'class-validator';
-import { Gender } from '../entities/user.entity';
+import { Role } from 'src/core/constants/enums';
 
 export class CreateUserDto {
-  @IsString()
-  name: string;
-
-  @IsEnum(Gender, { message: 'gender must be MALE or FEMALE' })
-  gender: Gender;
-
   @IsEmail()
   email: string;
 
-  @IsPhoneNumber('ID', { message: 'phone number must start with 62' })
-  @IsOptional()
-  phone?: string;
+  @MinLength(6)
+  password: string;
 
   @IsString()
-  address: string;
+  fullName: string;
 
-  @IsUrl()
+  @IsEnum(Role)
+  role: Role;
+
   @IsOptional()
-  avatar?: string;
+  @IsPhoneNumber('ID')
+  phoneNumber?: string;
 
+  @IsOptional()
   @IsUUID()
-  accountId: string;
+  shelterId?: string;
 }

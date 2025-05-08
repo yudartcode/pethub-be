@@ -1,34 +1,37 @@
-import { Exclude } from 'class-transformer';
-import { MinLength } from 'class-validator';
+import { Pet } from 'src/modules/pets/entities/pet.entity';
 import { User } from 'src/modules/users/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
-  OneToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
 @Entity()
-export class Account {
+export class Shelter {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ unique: true })
-  username: string;
+  @Column()
+  name: string;
 
   @Column()
-  @MinLength(8)
-  @Exclude()
-  password: string;
+  address: string;
 
-  @Column({ default: true })
-  isActive?: boolean;
+  @Column()
+  contactEmail: string;
 
-  @OneToOne(() => User, (user) => user.account)
-  user: User;
+  @Column()
+  phoneNumber: string;
+
+  @OneToMany(() => User, (user) => user.shelter)
+  staff: User[];
+
+  @OneToMany(() => Pet, (pet) => pet.shelter)
+  pets: Pet[];
 
   @CreateDateColumn()
   createdAt: Date;

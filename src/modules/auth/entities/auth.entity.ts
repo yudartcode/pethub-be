@@ -1,3 +1,3 @@
-export class Pet {
+export class AuthRespose {
   access_token: string;
 }

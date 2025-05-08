@@ -1,46 +1,48 @@
-import { Account } from 'src/modules/accounts/entities/account.entity';
+import { Exclude } from 'class-transformer';
+import { Role } from 'src/core/constants/enums';
+import { AdoptionRequest } from 'src/modules/adoption_request/entities/adoption_request.entity';
+import { Pet } from 'src/modules/pets/entities/pet.entity';
+import { Shelter } from 'src/modules/shelter/entities/shelter.entity';
 import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
-  JoinColumn,
-  OneToOne,
+  ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-
-export enum Gender {
-  MALE = 'MALE',
-  FEMALE = 'FEMALE',
-}
 
 @Entity()
 export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
-  name: string;
-
-  @Column({ type: 'enum', enum: Gender })
-  gender: Gender;
-
   @Column({ unique: true })
   email: string;
 
-  @Column({ nullable: true })
-  phone?: string;
+  @Column()
+  @Exclude()
+  password: string;
 
   @Column()
-  address: string;
+  fullName: string;
+
+  @Column({ type: 'enum', enum: Role })
+  role: Role;
 
   @Column({ nullable: true })
-  avatar?: string;
+  phoneNumber: string;
 
-  @OneToOne(() => Account, (account) => account.user)
-  @JoinColumn()
-  account: Account;
+  @OneToMany(() => Pet, (pet) => pet.owner)
+  pets: Pet[];
+
+  @OneToMany(() => AdoptionRequest, (request) => request.requester)
+  adoptionRequests: AdoptionRequest[];
+
+  @ManyToOne(() => Shelter, (shelter) => shelter.staff, { nullable: true })
+  shelter: Shelter;
 
   @CreateDateColumn()
   createdAt: Date;

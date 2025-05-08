@@ -7,28 +7,26 @@ import { Repository } from 'typeorm';
 import { QueryToolkitService } from 'src/common/query-toolkit.service';
 import { QueryParamsDto } from 'src/common/dto/query-params.dto';
 import { BaseService } from 'src/common/base.service';
-import { AccountsService } from '../accounts/accounts.service';
+import { hashPassword } from 'src/core/utils/utils';
 
 @Injectable()
 export class UsersService extends BaseService<User> {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    private readonly accountService: AccountsService,
     queryToolkit: QueryToolkitService,
   ) {
     super(userRepository, queryToolkit);
   }
 
-  async create(createUserDto: CreateUserDto) {
-    const account = await this.accountService.findOne(createUserDto.accountId);
-    if (!account) throw new Error('Account not found');
-    const user = this.userRepository.create({ ...createUserDto, account });
+  async create(createUserDto: CreateUserDto): Promise<User> {
+    createUserDto.password = await hashPassword(createUserDto.password);
+    const user = this.userRepository.create(createUserDto);
     return await this.userRepository.save(user);
   }
 
   async findAll(query: QueryParamsDto) {
-    const allowedFields = ['name', 'email', 'account.username'];
+    const allowedFields = ['fullName', 'email', 'role'];
     return this.baseFindAll(
       query,
       allowedFields,
@@ -37,16 +35,26 @@ export class UsersService extends BaseService<User> {
     );
   }
 
-  async findOne(id: string) {
-    return await this.userRepository.findOneBy({ id });
+  async findOne(id: string): Promise<User> {
+    return await this.userRepository.findOne({
+      where: { id },
+      relations: ['adoptionRequests', 'pets', 'shelter'],
+    });
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto) {
+  async findByEmail(email: string): Promise<User> {
+    return await this.userRepository.findOneBy({ email });
+  }
+
+  async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
+    if (updateUserDto.password) {
+      updateUserDto.password = await hashPassword(updateUserDto.password);
+    }
     await this.userRepository.update(id, updateUserDto);
     return this.userRepository.findOneBy({ id });
   }
 
-  async remove(id: string) {
-    return await this.userRepository.softDelete(id);
+  async remove(id: string): Promise<void> {
+    await this.userRepository.softDelete(id);
   }
 }

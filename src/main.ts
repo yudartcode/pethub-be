@@ -41,7 +41,11 @@ async function bootstrap() {
     )
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('docs', app, documentFactory);
+  SwaggerModule.setup('docs', app, documentFactory, {
+    swaggerOptions: {
+      persistAuthorization: true, // 👈 This line makes auth persist on reload
+    },
+  });
 
   await app.listen(process.env.APP_PORT || 3000);
 }
