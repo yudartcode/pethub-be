@@ -1,9 +1,13 @@
-import { Gender } from 'src/modules/users/entities/user.entity';
+import { AdoptionRequest } from 'src/modules/adoption_request/entities/adoption_request.entity';
+import { Shelter } from 'src/modules/shelter/entities/shelter.entity';
+import { User } from 'src/modules/users/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -16,26 +20,32 @@ export class Pet {
   @Column()
   name: string;
 
-  @Column({ type: 'enum', enum: Gender })
-  gender: Gender;
-
   @Column()
   species: string;
 
-  @Column({ nullable: true })
-  breed?: string;
+  @Column()
+  breed: string;
 
-  @Column({ nullable: true, type: 'date' })
-  dob?: Date;
+  @Column()
+  age: number;
 
-  @Column({ nullable: true })
-  color?: string;
+  @Column()
+  gender: string;
 
-  @Column('simple-array', { nullable: true })
-  pictures?: string[];
+  @Column()
+  description: string;
 
-  @Column({ default: false })
-  isDead?: boolean;
+  @Column({ default: true })
+  isAvailableForAdoption: boolean;
+
+  @ManyToOne(() => Shelter, (shelter) => shelter.pets, { nullable: true })
+  shelter: Shelter;
+
+  @ManyToOne(() => User, (user) => user.pets, { nullable: true })
+  owner: User;
+
+  @OneToMany(() => AdoptionRequest, (request) => request.pet)
+  adoptionRequests: AdoptionRequest[];
 
   @CreateDateColumn()
   createdAt: Date;

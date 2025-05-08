@@ -22,13 +22,13 @@ import { User } from './entities/user.entity';
 import { resBuilder } from 'src/core/utils/utils';
 import { QueryParamsDto } from 'src/common/dto/query-params.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RoleGuard } from '../auth/guards/role/role.guard';
+import { Role } from 'src/core/constants/enums';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
   @Post()
   @ApiCreatedResponse({ type: User })
   async create(@Body() createUserDto: CreateUserDto) {
@@ -37,7 +37,7 @@ export class UsersController {
   }
 
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, new RoleGuard([Role.ADMIN, Role.SHELTER_STAFF]))
   @Get()
   @ApiOkResponse({ type: [User] })
   async findAll(@Query() query: QueryParamsDto) {
@@ -49,8 +49,9 @@ export class UsersController {
   @Get(':id')
   @ApiOkResponse({ type: User })
   async findOne(@Param('id') id: string) {
-    const user = this.usersService.findOne(id);
-    return resBuilder(HttpStatus.OK, true, 'Get users', user);
+    const user = await this.usersService.findOne(id);
+    if (!user) return resBuilder(HttpStatus.NOT_FOUND, false, 'User not found');
+    return resBuilder(HttpStatus.OK, true, 'Get user', user);
   }
 
   @ApiBearerAuth()
@@ -58,16 +59,16 @@ export class UsersController {
   @Patch(':id')
   @ApiOkResponse({ type: User })
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    const user = this.usersService.update(id, updateUserDto);
+    const user = await this.usersService.update(id, updateUserDto);
     return resBuilder(HttpStatus.OK, true, 'User updated', user);
   }
 
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, new RoleGuard([Role.ADMIN, Role.SHELTER_STAFF]))
   @Delete(':id')
   @ApiOkResponse({ type: User })
   async remove(@Param('id') id: string) {
-    const user = this.usersService.remove(id);
+    const user = await this.usersService.remove(id);
     return resBuilder(HttpStatus.OK, true, 'User deleted', user);
   }
 }
