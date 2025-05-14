@@ -14,7 +14,7 @@ import {
 @Entity()
 export class AdoptionRequest {
   @PrimaryGeneratedColumn('uuid')
-  id: number;
+  id: string;
 
   @ManyToOne(() => User, (user) => user.adoptionRequests)
   requester: User;
