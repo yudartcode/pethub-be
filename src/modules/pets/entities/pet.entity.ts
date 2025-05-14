@@ -1,3 +1,4 @@
+import { Gender } from 'src/core/constants/enums';
 import { AdoptionRequest } from 'src/modules/adoption_request/entities/adoption_request.entity';
 import { Shelter } from 'src/modules/shelter/entities/shelter.entity';
 import { User } from 'src/modules/users/entities/user.entity';
@@ -29,8 +30,8 @@ export class Pet {
   @Column()
   age: number;
 
-  @Column()
-  gender: string;
+  @Column({ type: 'enum', enum: Gender, default: Gender.MALE })
+  gender: Gender;
 
   @Column()
   description: string;
@@ -39,10 +40,10 @@ export class Pet {
   isAvailableForAdoption: boolean;
 
   @ManyToOne(() => Shelter, (shelter) => shelter.pets, { nullable: true })
-  shelter: Shelter;
+  shelter?: Shelter;
 
   @ManyToOne(() => User, (user) => user.pets, { nullable: true })
-  owner: User;
+  owner?: User;
 
   @OneToMany(() => AdoptionRequest, (request) => request.pet)
   adoptionRequests: AdoptionRequest[];

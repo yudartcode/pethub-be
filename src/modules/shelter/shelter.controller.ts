@@ -25,6 +25,10 @@ import { QueryParamsDto } from 'src/common/dto/query-params.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RoleGuard } from '../auth/guards/role/role.guard';
 import { Role } from 'src/core/constants/enums';
+import {
+  BaseApiResponse,
+  PaginatedResponse,
+} from 'src/core/constants/response';
 
 @Controller('shelter')
 export class ShelterController {
@@ -34,7 +38,9 @@ export class ShelterController {
   @UseGuards(JwtAuthGuard, new RoleGuard([Role.ADMIN]))
   @Post()
   @ApiCreatedResponse({ type: Shelter })
-  async create(@Body() createShelterDto: CreateShelterDto) {
+  async create(
+    @Body() createShelterDto: CreateShelterDto,
+  ): Promise<BaseApiResponse<Shelter>> {
     const shelter = await this.sheltersService.create(createShelterDto);
     return resBuilder(HttpStatus.CREATED, true, 'Shelter created', shelter);
   }
@@ -43,7 +49,9 @@ export class ShelterController {
   @UseGuards(JwtAuthGuard)
   @Get()
   @ApiOkResponse({ type: [Shelter] })
-  async findAll(@Query() query: QueryParamsDto) {
+  async findAll(
+    @Query() query: QueryParamsDto,
+  ): Promise<BaseApiResponse<PaginatedResponse<Shelter>>> {
     return await this.sheltersService.findAll(query);
   }
 
@@ -51,7 +59,7 @@ export class ShelterController {
   @UseGuards(JwtAuthGuard)
   @Get(':id')
   @ApiOkResponse({ type: Shelter })
-  async findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string): Promise<BaseApiResponse<Shelter>> {
     const shelter = await this.sheltersService.findOne(id);
     if (!shelter)
       return resBuilder(HttpStatus.NOT_FOUND, false, 'Shelter not found');
@@ -65,7 +73,7 @@ export class ShelterController {
   async update(
     @Param('id') id: string,
     @Body() updateShelterDto: UpdateShelterDto,
-  ) {
+  ): Promise<BaseApiResponse<Shelter>> {
     const shelter = await this.sheltersService.update(id, updateShelterDto);
     return resBuilder(HttpStatus.OK, true, 'Shelter updated', shelter);
   }
@@ -74,8 +82,8 @@ export class ShelterController {
   @UseGuards(JwtAuthGuard, new RoleGuard([Role.ADMIN]))
   @Delete(':id')
   @ApiGoneResponse({ type: Shelter })
-  async remove(@Param('id') id: string) {
-    const shelter = await this.sheltersService.remove(id);
-    return resBuilder(HttpStatus.OK, true, 'Shelter deleted', shelter);
+  async remove(@Param('id') id: string): Promise<BaseApiResponse<void>> {
+    await this.sheltersService.remove(id);
+    return resBuilder(HttpStatus.OK, true, 'Shelter deleted', null);
   }
 }

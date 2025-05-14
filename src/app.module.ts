@@ -7,6 +7,8 @@ import { PetsModule } from './modules/pets/pets.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { ShelterModule } from './modules/shelter/shelter.module';
 import { AdoptionRequestModule } from './modules/adoption_request/adoption_request.module';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -27,12 +29,21 @@ import { AdoptionRequestModule } from './modules/adoption_request/adoption_reque
       ],
       synchronize: process.env.NODE_ENV !== 'prod',
     }),
+    ThrottlerModule.forRoot({
+      throttlers: [{ limit: 10, ttl: 60000 }],
+    }),
     CommonModule,
     AuthModule,
     UsersModule,
     PetsModule,
     ShelterModule,
     AdoptionRequestModule,
+  ],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
   ],
 })
 export class AppModule {}

@@ -7,6 +7,10 @@ import { Repository } from 'typeorm';
 import { QueryToolkitService } from 'src/common/query-toolkit.service';
 import { QueryParamsDto } from 'src/common/dto/query-params.dto';
 import { BaseService } from 'src/common/base.service';
+import {
+  BaseApiResponse,
+  PaginatedResponse,
+} from 'src/core/constants/response';
 
 @Injectable()
 export class ShelterService extends BaseService<Shelter> {
@@ -23,7 +27,9 @@ export class ShelterService extends BaseService<Shelter> {
     return await this.shelterRepository.save(shelter);
   }
 
-  async findAll(query: QueryParamsDto) {
+  async findAll(
+    query: QueryParamsDto,
+  ): Promise<BaseApiResponse<PaginatedResponse<Shelter>>> {
     const allowedFields = ['fullName', 'email', 'role'];
     return this.baseFindAll(
       query,

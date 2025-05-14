@@ -3,6 +3,10 @@ import { QueryParamsDto } from './dto/query-params.dto';
 import { QueryToolkitService } from './query-toolkit.service';
 import { Repository } from 'typeorm';
 import { HttpStatus } from '@nestjs/common';
+import {
+  BaseApiResponse,
+  PaginatedResponse,
+} from 'src/core/constants/response';
 
 export abstract class BaseService<T> {
   constructor(
@@ -15,7 +19,7 @@ export abstract class BaseService<T> {
     allowedFields: string[],
     alias = 'entity',
     relations?: string[],
-  ) {
+  ): Promise<BaseApiResponse<PaginatedResponse<T>>> {
     const qb = this.repo.createQueryBuilder(alias);
 
     this.queryToolkit.applyQuery({

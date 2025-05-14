@@ -9,3 +9,8 @@ export enum Status {
   APPROVED = 'APPROVED',
   REJECTED = 'REJECTED',
 }
+
+export enum Gender {
+  MALE = 'MALE',
+  FEMALE = 'FEMALE',
+}

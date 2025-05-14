@@ -1,7 +1,7 @@
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { ValidationPipe } from '@nestjs/common';
+import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import {
   DatabaseExceptionFilter,
   HttpExceptionFilter,
@@ -16,6 +16,8 @@ async function bootstrap() {
     methods: ['GET', 'POST', 'PATCH', 'DELETE'],
     credentials: true,
   });
+
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
   app.setGlobalPrefix('api');
   app.useGlobalPipes(

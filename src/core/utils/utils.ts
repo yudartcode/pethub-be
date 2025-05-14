@@ -36,7 +36,7 @@ export const pageBuilder = <T = any>(
 };
 
 export const hashPassword = async (password: string) => {
-  const salt = await bcrypt.genSalt(Number(process.env.BCRYPT_COST));
+  const salt = await bcrypt.genSalt(Number(process.env.BCRYPT_ROUND));
   return await bcrypt.hash(password, salt);
 };
 

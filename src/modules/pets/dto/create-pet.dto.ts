@@ -1,10 +1,12 @@
 import {
   IsBoolean,
+  IsEnum,
   IsNumber,
   IsOptional,
   IsString,
   IsUUID,
 } from 'class-validator';
+import { Gender } from 'src/core/constants/enums';
 
 export class CreatePetDto {
   @IsString()
@@ -19,8 +21,8 @@ export class CreatePetDto {
   @IsNumber()
   age: number;
 
-  @IsString()
-  gender: string;
+  @IsEnum(Gender)
+  gender: Gender = Gender.MALE;
 
   @IsString()
   description: string;
