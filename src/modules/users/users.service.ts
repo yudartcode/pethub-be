@@ -26,6 +26,24 @@ export class UsersService extends BaseService<User> {
     super(userRepository, queryToolkit);
   }
 
+  async createAdminIfNotExist() {
+    const email = 'admin@pathub.com';
+
+    const existingUser = await this.findByEmail(email);
+
+    if (!existingUser)
+      await this.create({
+        email: 'admin@pathub.com',
+        fullName: 'Admin Pathub',
+        password: 'Secret123',
+        role: Role.ADMIN,
+      });
+  }
+
+  async onModuleInit() {
+    await this.createAdminIfNotExist();
+  }
+
   async create(createUserDto: CreateUserDto): Promise<User> {
     createUserDto.password = await hashPassword(createUserDto.password);
 
